@@ -1,0 +1,24 @@
+{
+  "name": "testflow-automation",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test",
+    "test:auth": "playwright test tests/auth/",
+    "test:projects": "playwright test tests/projects/",
+    "test:suites": "playwright test tests/test-suites/",
+    "test:cases": "playwright test tests/test-cases/",
+    "test:runs": "playwright test tests/test-runs/",
+    "test:defects": "playwright test tests/defects/",
+    "test:users": "playwright test tests/users/",
+    "test:rbac": "playwright test tests/rbac/",
+    "test:chromium": "playwright test --project=chromium",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.1",
+    "@types/node": "^20.13.0",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,77 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: automation/package-lock.json
+
+      - name: Install automation dependencies
+        working-directory: automation
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: automation
+        run: npx playwright install --with-deps
+
+      - name: Start application stack
+        run: |
+          cp .env.example .env
+          docker compose up -d --build
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY || 'ci-test-secret-key-not-for-production' }}
+
+      - name: Wait for backend readiness
+        run: |
+          echo "Waiting for backend..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8000/health; do sleep 2; done'
+          echo "Backend is ready"
+
+      - name: Wait for frontend readiness
+        run: |
+          echo "Waiting for frontend..."
+          timeout 60 bash -c 'until curl -sf http://localhost:5173; do sleep 2; done'
+          echo "Frontend is ready"
+
+      - name: Run Playwright tests
+        working-directory: automation
+        run: npx playwright test
+        env:
+          FRONTEND_URL: http://localhost:5173
+          API_URL: http://localhost:8000
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: automation/playwright-report/
+          retention-days: 14
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: automation/test-results/
+          retention-days: 7
+
+      - name: Stop application stack
+        if: always()
+        run: docker compose down

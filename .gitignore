@@ -1,0 +1,69 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+
+# Automation
+automation/node_modules/
+automation/playwright-report/
+automation/test-results/
+automation/.auth/
+automation/blob-report/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+
+# Docker volumes
+mysql_data/
+
+# Coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# Playwright authentication state
+.auth/
+
+# Validation and temporary artifacts.edge-validation/
+.tmp-edge/
+.tmp-edge-2/
+
+# Playwright generated results
+test-results/
+
+
+.edge-validation/
+
