@@ -1,6 +1,6 @@
 # TestFlow Defect Report — ICSR SDET Assignment
 
-**Review/build baseline:** source commit `abe32fe` and docs-only follow-up `5535601`; fixes below are in the current uncommitted working tree.
+**Review/build baseline:** source commit `abe32fe` and docs-only follow-up `5535601`; the remediation is present in pushed commit `e41c5b6`.
 **Review date:** 22 October 2026
 **Environment:** Windows local review; TestFlow local app; README/config source inspection and focused Playwright tests
 **Scope:** Full Playwright report (67 configured instances) plus current focused logout and API checks. This report covers confirmed documentation/configuration defects. No application behavior defect was observed in the passing test scope. This is not a claim that the application is defect-free.
@@ -17,13 +17,13 @@
 
 | Status | Count |
 |---|---:|
-| Fixed in working tree; static retest passed | 5 |
+| Fixed in commit `e41c5b6`; static retest passed | 5 |
 | Open product defects | 0 |
 | Unverified product findings | 0 |
 
 Severity describes user/evaluator impact: High means a core workflow cannot be completed; Medium means a documented setup or verification command is misleading or fails; Low means the discrepancy is limited to test-planning claims. Priority describes fix order before submission: P1 blocks setup or test execution; P2 is a consistency correction.
 
-These defects were confirmed by comparing repository files and command discovery. They are documentation/configuration defects, not failures reproduced in TestFlow product behavior. Their original reproduction observed mismatches in the committed `5535601` content; remediation is present in the working tree and was statically checked. A clean-checkout setup was not repeated after edits.
+These defects were confirmed by comparing repository files and command discovery. They are documentation/configuration defects, not failures reproduced in TestFlow product behavior. Their original reproduction observed mismatches in the committed `5535601` content; remediation is present in commit `e41c5b6` and was statically checked. A clean-checkout setup was not repeated after edits.
 
 ## Confirmed findings
 
@@ -37,7 +37,7 @@ These defects were confirmed by comparing repository files and command discovery
 - **Severity:** Medium
 - **Priority:** P1
 - **Environment/build:** Windows local checkout, source `5535601`.
-- **Status:** Fixed in working tree; static retest passed. Clean database setup retest remains pending.
+- **Status:** Fixed in commit `e41c5b6`; static retest passed. Clean database setup retest remains pending.
 - **Evidence:** `README.md` Seed Data; `backend/seed/seed.py` `_get_or_create_user` calls.
 - **Recommended action / retest:** Keep README values aligned with seed source; run seed on a disposable DB and verify each documented account can log in without publishing passwords in defect records.
 
@@ -51,7 +51,7 @@ These defects were confirmed by comparing repository files and command discovery
 - **Severity:** Medium
 - **Priority:** P1
 - **Environment/build:** Docker configuration at `5535601`.
-- **Status:** Fixed in working tree; static retest passed. Docker startup retest remains pending.
+- **Status:** Fixed in commit `e41c5b6`; static retest passed. Docker startup retest remains pending.
 - **Evidence:** `.env.example`, `.github/workflows/playwright.yml`, `docker-compose.yml`, `backend/app/core/config.py`.
 - **Recommended action / retest:** Use `JWT_SECRET_KEY` consistently and verify Compose receives a generated local value without recording the value in logs or this report.
 
@@ -65,7 +65,7 @@ These defects were confirmed by comparing repository files and command discovery
 - **Severity:** Medium
 - **Priority:** P1
 - **Environment/build:** Playwright config at `5535601`.
-- **Status:** Fixed in working tree; `npm run test:chromium -- --list` reports the configured Chromium projects.
+- **Status:** Fixed in commit `e41c5b6`; `npm run test:chromium -- --list` reports the configured Chromium projects.
 - **Evidence:** `README.md`, `automation/package.json`, `automation/playwright.config.ts`.
 - **Recommended action / retest:** Keep the wildcard selector aligned with configured names and retain test-list output in the final verification log.
 
@@ -79,7 +79,7 @@ These defects were confirmed by comparing repository files and command discovery
 - **Severity:** Low
 - **Priority:** P2
 - **Environment/build:** Test documentation at `5535601`.
-- **Status:** Fixed in working tree; README now lists package scripts and test strategy describes actual suites.
+- **Status:** Fixed in commit `e41c5b6`; README now lists package scripts and test strategy describes actual suites.
 - **Evidence:** `README.md`, `docs/test-strategy.md`, `automation/tests/`, `automation/package.json`.
 - **Recommended action / retest:** Use `npm run test:<suite>` commands or add tags only when the suite actually uses them; validate commands with `--list`.
 
@@ -93,7 +93,7 @@ These defects were confirmed by comparing repository files and command discovery
 - **Severity:** Medium
 - **Priority:** P1
 - **Environment/build:** Assessment documentation at `5535601`.
-- **Status:** Fixed in working tree; inventory now separates the prior full run, focused current tests, backend run, and unverified DB cases.
+- **Status:** Fixed in commit `e41c5b6`; inventory now separates the prior full run, focused current tests, backend run, and unverified DB cases.
 - **Evidence:** `docs/test-cases.md`, `automation/playwright-report/index.html`, `TestFlow-Playwright-Report.zip`.
 - **Recommended action / retest:** Keep per-case statuses tied to test names and report scope; rerun full suite after any test changes before replacing the current all-suite evidence.
 

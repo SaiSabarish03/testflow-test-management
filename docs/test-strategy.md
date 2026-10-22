@@ -62,5 +62,13 @@ Use Playwright auto-waiting and explicit assertions/URL waits for asynchronous U
 ## Coverage limitations
 
 - No dedicated logout or broad boundary suite existed in the original test inventory; a focused logout and page-size boundary check has since been added and run.
-- The page-size API assertion uses a 2,000 ms threshold in a local test environment; it is not a production service-level objective.
+- The API project-list check validates the response contract; no single-request latency threshold is used as a functional assertion. Performance requirements need a repeated, controlled workload and separate reporting.
 - UI/API/database create-update-delete reconciliation remains outstanding.
+
+## Latest safe execution (22 October 2026)
+
+- `python -m pytest -q` from `backend/`: **320 passed, 31 warnings, 132.25 seconds**. Backend fixtures create and drop an in-memory SQLite schema.
+- `npx.cmd playwright test --project=api --grep "authenticated project list|page size above" --reporter=list --output=test-results/current-api-readonly`: **2 passed**. These checks perform authentication and project-list reads only.
+- `npx.cmd playwright test --project=chromium-noauth --grep "Authenticated user can log out" --reporter=list --output=test-results/current-logout`: **4 passed**, comprising 3 auth setup cases and 1 logout case.
+- Full Playwright regression was not run: the effective backend configuration resolves to the populated MySQL database `testflow`. Do not run mutating Playwright cases until services are pointed to and verified against an isolated disposable test database.
+- The existing HTML report and ZIP represent the older 67-instance run. Focused runs used the list reporter and did not generate a fresh HTML report.

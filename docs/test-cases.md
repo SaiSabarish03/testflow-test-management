@@ -2,11 +2,11 @@
 
 ## Execution evidence
 
-- The full configured Playwright run recorded in `automation/playwright-report/index.html` reports **67 passed, 0 failed, 0 flaky, 0 skipped** in 261,433 ms (about 4.36 minutes). The report is from the source baseline `abe32fe`; commit `5535601` changes only `docs/icsr-assessment.md`, so application and automation source at that run match the submitted commit.
-- After that full run, this working tree added a logout test and an API page-size boundary test, and added timing measurement to the existing project-list API test. Focused runs on the current working tree passed: logout scenario **1 passed** (plus 3 auth setup tests); API project-list timing and page-size boundary **2 passed**.
-- Backend result reported for the same application source: **320 passed, 31 warnings**. Direct UI/API/MySQL reconciliation remains unverified.
+- The full configured Playwright run recorded in `automation/playwright-report/index.html` reports **67 passed, 0 failed, 0 flaky, 0 skipped** in 261,433 ms (about 4.36 minutes). The report is from source baseline `abe32fe`; later changes committed in `e41c5b6` added logout/boundary coverage and altered reporting configuration, so this report does not represent current source.
+- Current verification on 22 October 2026: backend **320 passed, 31 warnings** in 132.25 seconds using in-memory SQLite; current Playwright API read-only project-list and page-size boundary checks **2 passed**; current logout check **1 passed** plus 3 auth setup cases. The full current Playwright suite was not run because the live backend effective URL points to the populated `testflow` MySQL database.
+- The API project-list test checks the response contract only. A single-request latency threshold was removed because it is not a stable performance SLO. A prior focused run observed 616 ms locally; this is an observation, not a performance claim. Direct UI/API/MySQL reconciliation remains unverified.
 - Current source inventory has **58 distinct test titles** in `automation/tests/**/*.spec.ts` (plus 3 auth setup tests). The old 67 count is configured test instances, including four Firefox and four WebKit smoke repetitions; it is not the distinct scenario count for the current worktree.
-- The full current suite was not rerun after the focused additions. No failure screenshots or traces are claimed; the full run passed. The report ZIP at repository root contains a self-contained `index.html`; it has no separate screenshot/trace files.
+- `automation/playwright-report/index.html` and `TestFlow-Playwright-Report.zip` remain prior-run evidence for the 67-instance run, not current-run evidence. The ZIP contains only the self-contained `index.html`; there are no separate screenshot/trace files. Current focused runs used the list reporter and did not refresh the HTML report.
 
 | ID | Area | Scenario | Preconditions | Core steps | Expected result | Latest actual / evidence |
 |---|---|---|---|---|---|---|
@@ -30,7 +30,6 @@
 | RBAC-002 | Authorization | Unauthenticated API request | No bearer token | GET `/api/auth/me` | HTTP 401 | PASS — full Playwright report; `api.spec.ts` |
 | USER-001 | User management | Restrict user creation to admin | QA/Viewer role | Attempt create-user operation | Non-admin is forbidden | PASS — backend user tests; 320-test run |
 | API-001 | API boundary | Reject page size above maximum | QA account | GET projects with `page_size=101` | HTTP 422 with validation details | PASS — focused current API run, 2 tests |
-| API-002 | API performance | Project-list response time | QA account; local test environment | Time authenticated project-list request | Response under 2,000 ms | PASS — focused current API run; observed 587 ms |
 | DB-001 | Persistence | Reconcile project with MySQL | Dedicated test database | Create in UI/API; query matching row | UI, API and DB fields agree | NOT VERIFIED — no cross-layer comparison |
 | DB-002 | Relationships | Reconcile suite/case foreign keys | Dedicated test database | Create project/suite/case; query joins | Child rows reference expected parents | NOT VERIFIED — no workflow SQL evidence |
 | DB-003 | Persistence | Verify update and delete consistency | Dedicated test database | Update/delete through app; inspect DB | Persisted state matches app/API | NOT VERIFIED — no CRUD reconciliation |

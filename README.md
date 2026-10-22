@@ -141,6 +141,8 @@ Seed data also includes sample projects, test suites, test cases, test runs, and
 
 Use a dedicated test database for Playwright. The UI and API workflows create application records; do not point them at production or a shared database.
 
+Before running the full suite, verify the backend's effective `DATABASE_URL` points to an isolated disposable database and confirm `/health/db` succeeds against that target. Do not rely only on changing `automation/.env`: Playwright connects to an already-running backend, whose process may have loaded a different database URL. Backend pytest uses in-memory SQLite fixtures and does not require the populated MySQL database.
+
 ### Prerequisites
 
 ```bash
@@ -179,12 +181,6 @@ npx playwright test --project=webkit-noauth
 ```
 
 The Chromium command runs `chromium-noauth`, `chromium-admin`, and `chromium-rbac`. Firefox and WebKit currently run authentication and route-protection smoke tests only.
-
-### Run in parallel
-
-```bash
-npx playwright test --workers=4
-```
 
 ### Run API tests only
 
@@ -237,6 +233,7 @@ See [docs/test-strategy.md](docs/test-strategy.md) for the actual test projects,
 - Project-level member authorization uses a simplified model in v1
 - No real-time updates (no WebSocket)
 - Email notifications are not implemented
+- The current full Playwright report is from a prior 67-instance run; see [the execution summary](docs/test-execution-summary.md) for current focused results and the database safety blocker.
 
 ---
 

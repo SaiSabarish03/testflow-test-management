@@ -72,14 +72,11 @@ test.describe('API — authentication, projects and test-case workflow', () => {
 
   test('authenticated project list returns the documented collection shape', async ({ request }) => {
     const auth = await login(request, QA_EMAIL, QA_PASSWORD);
-    const startedAt = Date.now();
     const response = await request.get('/api/projects?page=1&page_size=10', {
       headers: bearer(auth.access_token),
     });
-    const elapsedMs = Date.now() - startedAt;
 
     expect(response.status()).toBe(200);
-    expect(elapsedMs, 'project list should respond within 2 seconds locally').toBeLessThan(2000);
     const body = await response.json();
     expect(Array.isArray(body.items)).toBe(true);
     expect(body.total).toEqual(expect.any(Number));
