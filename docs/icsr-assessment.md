@@ -1,9 +1,9 @@
 # ICSR Technical Assessment Audit — TestFlow
 
-**Assessment date:** 22 October 2026  
-**Latest verified revision:** `abe32fe` (`main`)  
-**Repository:** https://github.com/SaiSabarish03/testflow-test-management  
-**Assessment deadline:** 22 October 2026, 2:00 PM IST  
+**Assessment date:** 22 October 2026
+**Latest verified revision:** `5535601` (`main`, local `origin/main`); this commit changes the assessment document only relative to `abe32fe`.
+**Repository:** https://github.com/SaiSabarish03/testflow-test-management
+**Assessment deadline:** 22 October 2026, 2:00 PM IST
 **Assessment type:** Provisional requirement-by-requirement self-audit. The assignment did not provide official numerical weights.
 
 ## A. Executive summary
@@ -215,3 +215,50 @@ These checks are useful but do not meet the full assignment requirement to compa
 **Current position: substantial implementation with a passing configured Playwright run; final submission evidence and several requirement gaps remain.**
 
 The latest verified Playwright result is **67 passed, 0 failed, 0 flaky, 0 skipped in 4.4 minutes**. This is strong execution evidence for the scenarios configured in the run, not proof that every assignment requirement is complete. The most important remaining work is to make the report accessible to the assessor, correct setup/execution documentation, and accurately document the database and coverage limitations. The compliance score should be recalculated only after the requirement rows and evidence are reconciled; the previous 55.1% figure is no longer a valid current score.
+
+## J. Final gap-closure update — 22 October 2026, 1:32 PM IST
+
+This section supersedes earlier matrix rows where the working tree now contains targeted additions. It records changes after the 67-instance full run; it does not present a new full-suite pass.
+
+### Current execution evidence
+
+| Check | Command / artifact | Actual result | Scope |
+|---|---|---|---|
+| Prior full Playwright run | `automation/playwright-report/index.html`, packaged at repository root as `TestFlow-Playwright-Report.zip` | **67 passed, 0 failed, 0 flaky, 0 skipped; 261,433 ms** | Embedded report data confirms these totals. Run occurred on app/test source at `abe32fe`; `5535601` only changes this assessment document. |
+| Logout focused run | `npx.cmd playwright test --project=chromium-noauth --grep "Authenticated user can log out" --reporter=list --output=test-results/targeted-logout` | **4 passed**: three auth setup cases and the logout case | Current working tree; no application records created. |
+| API-focused run | `npx.cmd playwright test --project=api --grep "authenticated project list|page size above" --reporter=list --output=test-results/targeted-api-boundary` | **2 passed** | Current working tree; API reads only. Measured project-list request: 587 ms against the explicit local 2,000 ms threshold. |
+| Scenario inventory | 58 unique `test(...)` titles in Playwright spec files | Counted from source definitions; 56 were in the prior full report and two were added afterward | Distinct source scenario count, not browser/project repetitions. |
+| Backend | `python -m pytest -q` from `backend/` | **320 passed, 31 warnings** | Same backend source baseline; no backend code changed in `5535601` or the current edits. |
+
+The current full Playwright suite was not rerun after the new logout/boundary tests or trace-policy edit. The HTML ZIP contains one `index.html` file with embedded report data. It contains no separate screenshots or traces; the full run had no failed tests.
+
+### Updated status for changed requirements
+
+| Requirement | Updated status | Evidence / remaining gap |
+|---|---|---|
+| F2 logout | Verified for focused case | Current focused Chromium run confirms logout redirects and removes the local token. |
+| F11 boundary testing | Partially met | API page-size maximum boundary added and passed; broader UI/field boundaries remain. |
+| U3 20 distinct scenarios | Verified count; execution partial | 58 distinct current source titles; two additions only have focused run evidence. |
+| U6 boundary scenarios | Partially met | Page-size API boundary is covered; a dedicated broad UI/API boundary set is still missing. |
+| U13 failure traces | Configuration corrected; artifact behavior unverified | `trace: 'retain-on-failure'`; no failed run was generated to demonstrate a trace. |
+| A7 response time | Partially met | One read-only local project-list request passed a 2,000 ms threshold at 587 ms; this is not a production SLO. |
+| B1–B8 defect reporting | Verified for documentation/configuration findings | Five confirmed documentation/configuration defects are fully recorded in Markdown and CSV. No product behavior defect was observed in the tested scope. |
+| L2 test-case inventory | Updated | `docs/test-cases.md` links individual cases to execution evidence and marks database cases separately. |
+| L6/L11/L12 execution and setup guidance | Corrected in working tree | README, root env example, package scripts, and workflow now use actual seed values, `JWT_SECRET_KEY`, and project names. Clean-checkout setup remains unverified. |
+| L7/L9 report deliverables | Present locally | `TestFlow-Playwright-Report.zip`, `docs/defect-report.md`, and `docs/defect-report.csv`; report package and code edits are not pushed. |
+
+### Defects and deliverable status
+
+Five confirmed documentation/configuration defects (DOC-001–DOC-005) are recorded in `docs/defect-report.md` and `docs/defect-report.csv`, with severity, priority, environment, preconditions, reproduction steps, expected/actual results, status, evidence, and recommended retest. All five are fixed in the current working tree; static retest passed. Clean setup/Docker retest remains outstanding. No product defect was confirmed.
+
+The latest Playwright report ZIP and `APPLY-PATCH.md` remain untracked. They were not staged or pushed. Review the existing `APPLY-PATCH.md` before deciding whether it belongs in any submission package; its validation notes predate current runs.
+
+### Remaining P0/P1 work
+
+1. Run the full current Playwright suite on an isolated disposable database and generate a fresh report for the 58 current source scenarios.
+2. Verify README setup and Docker startup from a clean checkout; confirm the backend receives `JWT_SECRET_KEY` without exposing the value.
+3. Complete representative create/update/delete UI/API-to-MySQL comparisons with sanitized, reproducible SQL output.
+4. Package/attach the current HTML report and selected evidence for evaluator access; do not claim separate failure artifacts when no tests failed.
+5. Verify final GitHub `main` after the user reviews and commits the intended working-tree changes. No commit or push was made as part of this audit.
+
+**Updated recommendation:** Not ready to submit until current full-suite evidence is refreshed, the report is made evaluator-accessible, and the database reconciliation limitations are either closed or explicitly accepted by the assignment evaluator.

@@ -74,7 +74,7 @@ Authorization is enforced by the backend API on every request.
 ### Steps
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/SaiSabarish03/testflow-test-management.git
 cd testflow
 cp .env.example .env
 docker compose up --build
@@ -104,7 +104,7 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env             # edit DATABASE_URL and SECRET_KEY
+cp .env.example .env             # edit DATABASE_URL and JWT_SECRET_KEY
 alembic upgrade head
 python seed/seed.py
 uvicorn app.main:app --reload --port 8000
@@ -127,9 +127,9 @@ The seed script creates the following development accounts:
 
 | Name | Email | Password | Role |
 |---|---|---|---|
-| Admin User | admin@testflow.dev | Admin123! | ADMIN |
-| QA Engineer | qa@testflow.dev | QaPass123! | QA_ENGINEER |
-| Viewer User | viewer@testflow.dev | View123! | VIEWER |
+| Admin User | admin@testflow.local | Admin123! | ADMIN |
+| QA Engineer | qa@testflow.local | QaPass123! | QA_ENGINEER |
+| Viewer User | viewer@testflow.local | View123! | VIEWER |
 
 Seed data also includes sample projects, test suites, test cases, test runs, and defects.
 
@@ -139,13 +139,15 @@ Seed data also includes sample projects, test suites, test cases, test runs, and
 
 ## Running Playwright Tests
 
+Use a dedicated test database for Playwright. The UI and API workflows create application records; do not point them at production or a shared database.
+
 ### Prerequisites
 
 ```bash
 cd automation
-npm install
-npx playwright install
-cp .env.example .env   # set FRONTEND_URL and API_URL
+npm ci
+npx playwright install chromium firefox webkit
+cp .env.example .env   # set FRONTEND_URL, API_URL, and test credentials
 ```
 
 ### Run all tests
@@ -154,23 +156,29 @@ cp .env.example .env   # set FRONTEND_URL and API_URL
 npx playwright test
 ```
 
-### Run by suite tag
+### Run by suite
 
 ```bash
-npx playwright test --grep @smoke
-npx playwright test --grep @auth
-npx playwright test --grep @projects
-npx playwright test --grep @rbac
-npx playwright test --grep @api
+npm run test:auth
+npm run test:projects
+npm run test:suites
+npm run test:cases
+npm run test:runs
+npm run test:defects
+npm run test:users
+npm run test:rbac
+npm run test:api
 ```
 
 ### Run by browser
 
 ```bash
-npx playwright test --project=chromium
-npx playwright test --project=firefox
-npx playwright test --project=webkit
+npm run test:chromium
+npx playwright test --project=firefox-noauth
+npx playwright test --project=webkit-noauth
 ```
+
+The Chromium command runs `chromium-noauth`, `chromium-admin`, and `chromium-rbac`. Firefox and WebKit currently run authentication and route-protection smoke tests only.
 
 ### Run in parallel
 
@@ -181,13 +189,13 @@ npx playwright test --workers=4
 ### Run API tests only
 
 ```bash
-npx playwright test tests/api/
+npm run test:api
 ```
 
 ### HTML Report
 
 ```bash
-npx playwright show-report
+npm run report
 ```
 
 ### Trace Viewer
@@ -213,19 +221,7 @@ The pipeline:
 
 ## Test Strategy
 
-See [docs/test-strategy.md](docs/test-strategy.md) for the full test strategy.
-
-Suites:
-- **Smoke** — critical path verification
-- **Functional** — feature-level workflows
-- **Regression** — full coverage of business rules
-- **Negative** — validation and error handling
-- **RBAC** — role-based access control
-- **API** — REST API contract and behavior
-- **Integration** — UI/API state consistency
-
----
-
+See [docs/test-strategy.md](docs/test-strategy.md) for the actual test projects, commands, isolation guidance, browser scope, and report configuration.
 ## Design Decisions
 
 - Backend authorization is the source of truth; frontend role-gating is supplemental
@@ -258,42 +254,16 @@ Suites:
 
 ```
 testflow/
-├── frontend/
-│   └── src/
-│       ├── components/     Reusable UI components
-│       ├── pages/          Route-level page components
-│       ├── layouts/        App shell and layout wrappers
-│       ├── services/       API client functions
-│       ├── hooks/          Custom React hooks
-│       ├── routes/         Route definitions and guards
-│       ├── types/          TypeScript interfaces
-│       ├── utils/          Utility functions
-│       └── constants/      App-wide constants
-│
-├── backend/
-│   └── app/
-│       ├── api/            FastAPI routers
-│       ├── models/         SQLAlchemy ORM models
-│       ├── schemas/        Pydantic request/response schemas
-│       ├── services/       Business logic
-│       ├── repositories/   Database access layer
-│       ├── core/           Config, security, JWT
-│       └── dependencies/   FastAPI dependency injection
-│   ├── migrations/         Alembic migrations
-│   ├── seed/               Seed data scripts
-│   └── tests/              Backend unit/integration tests
-│
-├── automation/
-│   ├── tests/              Playwright test specs
-│   ├── pages/              Page Object Model classes
-│   ├── fixtures/           Playwright fixtures
-│   ├── api/                API client classes
-│   ├── test-data/          Test data constants
-│   ├── utils/              Automation utilities
-│   └── config/             Environment configuration
-│
-└── docs/
-    ├── architecture.md
-    ├── api.md
-    └── test-strategy.md
+  frontend/src/        React pages, components, API clients, routes, hooks, types
+  backend/app/         FastAPI routes, models, schemas, services, repositories
+  backend/migrations/  Alembic migrations
+  backend/seed/        Development seed data
+  backend/tests/       Pytest unit and API tests
+  automation/tests/    Playwright UI and API scenarios
+  automation/pages/    Page Object Model classes
+  automation/fixtures/ Shared Playwright fixtures
+  automation/test-data/Unique test data generators
+  automation/helpers/  Automation helpers
+  automation/config/   Auth state and setup
+  docs/                Architecture, API, test, database, defect, and assessment docs
 ```

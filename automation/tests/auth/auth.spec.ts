@@ -86,4 +86,18 @@ test.describe('Authentication', () => {
 
     await expect(page.getByText('VIEWER', { exact: true }).first()).toBeVisible();
   });
+
+  test('Authenticated user can log out and is redirected from protected routes', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(ADMIN_EMAIL, ADMIN_PASSWORD);
+    await loginPage.expectDashboard();
+
+    await page.getByLabel('User menu').click();
+    await page.getByRole('menuitem', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(/\/login/);
+    await page.goto('/projects');
+    await expect(page).toHaveURL(/\/login/);
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('access_token'))).toBeNull();
+  });
 });

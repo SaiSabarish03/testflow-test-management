@@ -12,7 +12,8 @@
     "test:defects": "playwright test tests/defects/",
     "test:users": "playwright test tests/users/",
     "test:rbac": "playwright test tests/rbac/",
-    "test:chromium": "playwright test --project=chromium",
+    "test:api": "playwright test --project=api",
+    "test:chromium": "playwright test --project=chromium-*",
     "report": "playwright show-report"
   },
   "devDependencies": {
