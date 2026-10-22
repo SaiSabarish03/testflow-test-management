@@ -43,6 +43,21 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
+    // Cross-browser smoke tests: authentication and route protection
+    {
+      name: 'firefox-noauth',
+      testMatch: '**/auth/auth.spec.ts',
+      grep: /invalid password|unknown email|unauthenticated user/i,
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit-noauth',
+      testMatch: '**/auth/auth.spec.ts',
+      grep: /invalid password|unknown email|unauthenticated user/i,
+      use: { ...devices['Desktop Safari'] },
+    },
+
+
     // ── Admin-authenticated tests ────────────────────────────────────────────
     {
       name: 'chromium-admin',
@@ -68,6 +83,13 @@ export default defineConfig({
       testMatch: '**/rbac/rbac.spec.ts',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
+    },
+    {
+      name: 'api',
+      testMatch: '**/api/api.spec.ts',
+      use: {
+        baseURL: API_URL,
+      },
     },
   ],
   outputDir: 'test-results',
